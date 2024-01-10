@@ -29,12 +29,12 @@ Route::group(["prefix" => 'auth'], function () {
     Route::post('/register', [AuthenticationController::class, 'Register']);
     Route::post('/login', [AuthenticationController::class,'Login']);
     Route::get('/profile', [AuthenticationController::class,'profile']);
-    Route::post('/logout', [AuthenticationController::class,'Logout'])->middleware('auth:sanctum');
+    Route::get('/logout', [AuthenticationController::class,'Logout'])->middleware('auth:api');
 });
 
 Route::group(["prefix" => 'user'], function () {
     Route::get('/getinterest/{id}', [InterestController::class,'getUserInterests']);
-    Route::get('/getprofile/{id}', [ProfileController::class,'getUserProfile']);
+    Route::get('/getprofile/{id}', [ProfileController::class,'getUserProfile'])->middleware('auth:api');;
     Route::get('/getmatches/{id}', [MatchController::class,'getUserMatches']);
     Route::post('/getmessage', [MessageController::class,'getUserMessages']);
     Route::post('/updateprofile/{id}', [UserController::class,'updateUserProfile']);
