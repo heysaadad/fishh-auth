@@ -8,11 +8,18 @@ use App\Models\User;
 
 class UserController extends Controller
 {
+
+    /**
+     *@authenticated
+    */
     public function getProfile($id){
         $profile = \App\Models\Profile::find($id);
         return response()->json($profile);
     }
 
+    /**
+     *@authenticated
+    */
     public function updateUserProfile(Request $request, $id){
         // if (auth()->user()->id == $id) {
         //     $profile = \App\Models\Profile::find($id);

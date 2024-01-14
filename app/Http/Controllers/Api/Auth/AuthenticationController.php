@@ -93,6 +93,10 @@ class AuthenticationController extends Controller
             ]);
         }
     }
+
+    /**
+     *@authenticated
+    */
     function Logout(Request $request){
         if (!$request->user()){
             return response()->json([

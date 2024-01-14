@@ -26,19 +26,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::group(["prefix" => 'auth'], function () {
-    Route::post('/register', [AuthenticationController::class, 'Register']);
-    Route::post('/login', [AuthenticationController::class,'Login']);
-    Route::get('/profile', [AuthenticationController::class,'profile']);
-    Route::get('/logout', [AuthenticationController::class,'Logout'])->middleware('auth:api');
-    Route::post('/send-verification-email/{email}', [AuthenticationController::class,'sendEmailVerificationLink'])->middleware('auth:api');
+    Route::post('/register', [AuthenticationController::class, 'Register'])->name('api.auth.register');
+    Route::post('/login', [AuthenticationController::class,'Login'])->name('api.auth.login');
+    //Route::get('/profile', [AuthenticationController::class,'profile'])->name('api.auth.profile')->middleware('auth:api');
+    Route::get('/logout', [AuthenticationController::class,'Logout'])->name('api.auth.logout')->middleware('auth:api');
+    Route::post('/send-verification-email/{email}', [AuthenticationController::class,'sendEmailVerificationLink'])->name('api.auth.sendVEmail')->middleware('auth:api');
 });
 
 Route::group(["prefix" => 'user'], function () {
-    Route::get('/getinterest/{id}', [InterestController::class,'getUserInterests']);
-    Route::get('/getprofile/{id}', [ProfileController::class,'getUserProfile'])->middleware('auth:api');
-    Route::get('/getmatches/{id}', [MatchController::class,'getUserMatches']);
-    Route::post('/getmessage', [MessageController::class,'getUserMessages']);
-    Route::post('/updateprofile/{id}', [UserController::class,'updateUserProfile']);
+    Route::get('/getinterest/{id}', [InterestController::class,'getUserInterests'])->name('api.user.getinterest');
+    Route::get('/getprofile/{id}', [ProfileController::class,'getUserProfile'])->name('api.user.getprofile')->middleware('auth:api');
+    Route::get('/getmatches/{id}', [MatchController::class,'getUserMatches'])->name('api.user.getmatches')->middleware('auth:api');
+    Route::post('/getmessage', [MessageController::class,'getUserMessages'])->name('api.user.getmessage');
+    Route::post('/updateprofile/{id}', [UserController::class,'updateUserProfile'])->name('api.user.updateprofile');
     //QUEUE
-    Route::post('/creatematch', [MatchController::class,'createUserMatch']);
+    // Route::post('/creatematch', [MatchController::class,'createUserMatch']);
 });

@@ -11,6 +11,10 @@ use App\Models\UserInterest;
 
 class InterestController extends Controller
 {
+
+    /**
+     *@authenticated
+    */
     public function getUserInterests(Request $request, $id){
         $user = User::with("interests")->find($id);
         $interests = $user->interests;
