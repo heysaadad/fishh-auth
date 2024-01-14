@@ -30,13 +30,15 @@ Route::group(["prefix" => 'auth'], function () {
     Route::post('/login', [AuthenticationController::class,'Login']);
     Route::get('/profile', [AuthenticationController::class,'profile']);
     Route::get('/logout', [AuthenticationController::class,'Logout'])->middleware('auth:api');
+    Route::post('/send-verification-email/{email}', [AuthenticationController::class,'sendEmailVerificationLink'])->middleware('auth:api');
 });
 
 Route::group(["prefix" => 'user'], function () {
     Route::get('/getinterest/{id}', [InterestController::class,'getUserInterests']);
-    Route::get('/getprofile/{id}', [ProfileController::class,'getUserProfile'])->middleware('auth:api');;
+    Route::get('/getprofile/{id}', [ProfileController::class,'getUserProfile'])->middleware('auth:api');
     Route::get('/getmatches/{id}', [MatchController::class,'getUserMatches']);
     Route::post('/getmessage', [MessageController::class,'getUserMessages']);
     Route::post('/updateprofile/{id}', [UserController::class,'updateUserProfile']);
+    //QUEUE
     Route::post('/creatematch', [MatchController::class,'createUserMatch']);
 });

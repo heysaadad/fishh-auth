@@ -7,6 +7,10 @@ use App\Models\Profile;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class AuthenticationController extends Controller
 {
@@ -14,6 +18,7 @@ class AuthenticationController extends Controller
         $request->validate([
             "email"=> "email|string|unique:users|required",
             "name" => "string|required",
+            "username" => "string|required|unique:users",
             "password" => "required|string|min:8",
             "age" => "integer|required",
         ]);
@@ -21,6 +26,7 @@ class AuthenticationController extends Controller
         $user = new User();
         $user->email = $request->email;
         $user->name = $request->name;
+        $user->username = $request->username;
         $user->password = bcrypt($request->password);
         $profile = new Profile();
         $profile->age = $request->age;
@@ -99,5 +105,56 @@ class AuthenticationController extends Controller
               "status"=>"success",
               "message"=> "Logout Successfull",
         ]);
+    }
+
+    function sendEmailVerificationLink($email){
+        $user = User::where("email", $email)->first();
+        if (!$user){
+            return response()->json([
+                "status"=> "error",
+                "message"=> "User Not Found",
+            ]);
+        }
+        if ($user->hasVerifiedEmail()){
+            return response()->json([
+                "status"=> "error",
+                "message"=> "Email Already Verified",
+            ]);
+        }
+        $random = Str::random(40);
+        $domainPrefix = URL::to('/auth/verify');
+        $urlToVerify = $domainPrefix . '/' . $random;
+        $mailData = [
+            "title" => "Fishh Email Verification",
+            "body" => "Please click the link below to verify your email address.",
+            "url" => $urlToVerify,
+            "user" => $user->name,
+        ];
+        Mail::send('auth.emailVerify', ['data' => $mailData], function($message) use ($user) {
+            $message->to($user->email, $user->name)
+                    ->subject('Fishh Email Verification');
+        });
+        $user->remember_token = $random;
+        $user->save();
+        return response()->json([
+            "status"=> "success",
+            "message"=> "Email Verification Link Sent",
+        ]);
+    }
+
+    function verifyEmail($token){
+        $user = User::where("remember_token", $token)->first();
+        if (!$user){
+            echo "<h1>User Not Found</h1>";
+        }
+        if ($user->hasVerifiedEmail()){
+            echo "<h1>Email Already Verified</h1>";
+        }
+        else
+        {
+            $user->email_verified_at = Carbon::now();
+            $user->save();
+            echo "<h1>Email Verified</h1>";
+        }
     }
 }
